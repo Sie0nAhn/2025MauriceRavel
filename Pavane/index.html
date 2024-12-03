@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Hand Tracking Music Player</title>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
+    <style>
+        @font-face {
+            font-family: 'Diphylleia-Regular';
+            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_JAMO@1.0/Diphylleia-Regular.woff2') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'Pretendard';
+            src: url('https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+            font-weight: 400;
+            font-style: normal;
+        }
+
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: white;
+            color: black;
+            font-family: 'Diphylleia-Regular', serif;
+        }
+
+        #title {
+            position: fixed;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%) skewX(-11deg);
+            text-align: center;
+            z-index: 1000;
+            font-size: 5vw;
+            color: #A87569;
+            font-family: 'Diphylleia-Regular', serif;
+            line-height: 1.2;
+            text-shadow: 
+				calc(-0.2vw) calc(-0.2vw) 0 #7ECEF4,
+				calc(0.2vw) calc(-0.2vw) 0 #7ECEF4,
+				calc(-0.2vw) calc(0.2vw) 0 #7ECEF4,
+				calc(0.2vw) calc(0.2vw) 0 #7ECEF4,
+				calc(-0.15vw) calc(-0.15vw) 0 #7ECEF4,
+				calc(0.15vw) calc(-0.15vw) 0 #7ECEF4,
+				calc(-0.15vw) calc(0.15vw) 0 #7ECEF4,
+				calc(0.15vw) calc(0.15vw) 0 #7ECEF4;
+			-webkit-font-smoothing: antialiased;
+			-moz-osx-font-smoothing: grayscale;
+        }
+
+        #container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            display: none;
+        }
+        .row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+        }
+        .instrument {
+            width: 150px;
+            height: 150px;
+            margin: 0 20px;
+        }
+        .instrument img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+        #startButton {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            background: transparent;
+            color: black;
+            border: 2px solid black;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Diphylleia-Regular', serif;
+        }
+        #message {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.2em;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            font-family: 'Diphylleia-Regular', serif;
+        }
+        #welcomeScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            z-index: 1000;
+        }
+
+        .welcome-left, .welcome-right {
+            width: 50%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 50px;
+            box-sizing: border-box;
+            align-items: flex-start;
+            padding-top: 80px;
+        }
+
+        .welcome-left {
+            background-color: #A87569;
+            color: #7ECEF4;
+        }
+
+        .welcome-right {
+            background-color: #7ECEF4;
+            color: #A87569;
+            position: relative;
+            overflow: hidden;
+        }
+
+
+        .welcome-right .section-title,
+        .welcome-right .welcome-text,
+        .welcome-right .image-container,
+        .welcome-right #startButton {
+            position: relative;
+            z-index: 2;
+        }
+
+        .section-title {
+            font-family: 'Diphylleia-Regular', serif;
+            font-size: 2.5vw;
+            margin-bottom: 3vw;
+            font-weight: bold;
+            text-align: left;
+            width: 100%;
+            word-break: keep-all;
+            line-height: 1.4;
+            margin-top: -20px;
+        }
+
+        .welcome-left .section-title {
+            margin-top: -30px;
+        }
+
+        .welcome-right .section-title {
+            margin-top: -30px;
+        }
+
+        .section-content, .welcome-text {
+            font-family: 'Pretendard', sans-serif;
+            line-height: 1.8;
+            margin-bottom: 3vw;
+            text-align: left;
+            width: 100%;
+            word-break: keep-all;
+            word-wrap: break-word;
+        }
+
+        .section-content {
+            font-size: 1.1vw;
+        }
+
+        .welcome-text {
+            font-size: 1.1vw;
+        }
+
+        .welcome-image {
+            width: 100%;
+            height: auto;
+            margin: 1vw 0;
+            align-self: flex-start;
+            max-width: 100%;
+            object-fit: contain;
+        }
+
+        #startButton {
+            font-family: 'Pretendard', sans-serif;
+            font-size: 1.2vw;
+            padding: 1vw 2vw;
+            border: 2px solid #A87569;
+            background: transparent;
+            color: #A87569;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 5px;
+            align-self: flex-start;
+        }
+
+        #startButton:hover {
+            background-color: #A87569;
+            color: #7ECEF4;
+        }
+
+        .image-container {
+            width: 100%;
+            display: flex;
+            justify-content: flex-start;
+            margin: 30px 0;
+        }
+
+        @media screen and (max-width: 1200px) {
+            .welcome-left, .welcome-right {
+                padding: 40px 50px;
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            .welcome-left, .welcome-right {
+                padding: 30px 40px;
+            }
+        }
+
+        .svg-image {
+            min-width: 30vw;
+            min-height: 30vw;
+        }
+
+    </style>
+</head>
+<body>
+    <video id="video" style="display: none"></video>
+    <canvas id="canvas"></canvas>
+    <div id="title">
+        Pavane pour une infante défunte
+    </div>
+    
+    <div id="welcomeScreen">
+        <div class="welcome-left">
+            <div class="section-title">
+                죽은 왕녀의 파반느 <br>
+                (Pavane pour une infante défunte)
+            </div>
+            <div class="section-content">
+                '인판타(infante)'는 스페인과 포르투갈 왕실의 공주를 의미합니다. 
+                파반느는 춤의 한 종류로 "과거 스페인 궁정에서 어린 공주가 추었을 법한 파반느"를 상상하며 작곡된 곡입니다.<br>
+                따라서 곡은 제목과 달리 슬픔보다는 고요하고 우아한 분위기와 함께 몽환적인 느낌을 자아냅니다.
+            </div>
+            <img src="och.png" alt="Orchestra" class="welcome-image">
+        </div>
+        <div class="welcome-right">
+            <div class="section-title">
+                곡 감상 방법<br>
+                Comment écouter des chansons
+            </div>
+            <div class="welcome-text">
+                손을 직접 움직여 지휘를 해보세요!<br>
+                오케스트라가 당신의 지휘에 맞춰 연주합니다.
+            </div>
+            <button id="startButton">지휘 시작하기</button>
+        </div>
+    </div>
+    
+    <div id="message">손을 움직여 지휘를 계속해주세요!</div>
+    
+    <div id="container">
+        <div class="row" id="row1"></div>
+        <div class="row" id="row2"></div>
+        <div class="row" id="row3"></div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

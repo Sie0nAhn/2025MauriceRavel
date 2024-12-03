@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>그림 그리기 & 음악 애니메이션</title>
+    <style>
+        @font-face {
+            font-family: 'Diphylleia-Regular';
+            src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_JAMO@1.0/Diphylleia-Regular.woff2') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'Pretendard';
+            src: url('https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+            font-weight: 700;
+            font-style: normal;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        .container {
+            display: flex;
+            width: 100vw;
+            height: 100vh;
+        }
+        .panel {
+            height: 100%;
+            position: relative;
+        }
+        #leftPanel {
+            flex: 1;
+            border-right: 5px solid #ccc;
+        }
+        #rightPanel {
+            flex: 2;
+        }
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #FEEABA;
+            
+        }
+        .gutter {
+            background-color: #ccc;
+            cursor: ew-resize;
+            width: 10px;
+        }
+        .tools-panel {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #AFC0E3;
+            padding: 1vw;
+        }
+        
+        .tool-group {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .shape-btn {
+            width: 4vw;
+            height: 4vw;
+            border: 2px solid #A87569;
+            background-color: #FACEA7;
+            cursor: pointer;
+        }
+
+        .shape-btn:hover {
+            background-color: #E99BB4;
+        }
+
+        .shape-btn.active {
+            background-color: #E99BB4;
+            border: 2px solid #A87569;
+        }
+
+    
+
+        label {
+            font-size: 1.2vw;
+            margin-right: 5px;
+            font-family: 'Pretendard-SemiBold', sans-serif;
+            color: #A87569;
+        }
+
+
+        .layers-panel {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            width: 200px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .layer-item {
+            display: flex;
+            align-items: center;
+            padding: 5px;
+            background: white;
+            margin: 2px 0;
+            border: 1px solid #ddd;
+        }
+
+        .layer-item.selected {
+            background: #e0e0ff;
+        }
+
+        .history-panel {
+            position: absolute;
+            right: 10px;
+            bottom: 10px;
+            width: 200px;
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .history-item {
+            padding: 5px;
+            background: white;
+            margin: 2px 0;
+            border: 1px solid #ddd;
+        }
+
+        .visibility-toggle {
+            margin-right: 5px;
+        }
+
+        #animation-title {
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%) skewX(-11deg);
+            text-align: center;
+            z-index: 1000;
+            font-size: 5vw;
+            color: #A87569;
+            font-family: 'Diphylleia-Regular', serif;
+            line-height: 1.2;
+            text-shadow: 
+                -3px -3px 0 #7ECEF4,
+                3px -3px 0 #7ECEF4,
+                -3px 3px 0 #7ECEF4,
+                3px 3px 0 #7ECEF4,
+                -2px -2px 0 #7ECEF4,
+                2px -2px 0 #7ECEF4,
+                -2px 2px 0 #7ECEF4,
+                2px 2px 0 #7ECEF4;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .animation-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="panel" id="leftPanel">
+            <canvas id="drawingArea"></canvas>
+            <div class="tools-panel">
+    <div class="tool-group">
+        <button class="shape-btn" data-shape="rectangle">■</button>
+        <button class="shape-btn" data-shape="circle">⦁</button>
+        <button class="shape-btn" data-shape="triangle">▴</button>
+        
+    </div>
+</div>
+        </div>
+        <div class="gutter"></div>
+        <div class="panel" id="rightPanel">
+            <canvas id="animationArea"></canvas>
+            <div id="animation-title">Boléro</div>
+        </div>
+            <audio id="music" src="Bolero.mp3"></audio>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
