@@ -1,135 +1,326 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title></title>
-	<style>
-		@font-face {
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Maurice Ravel</title>
+    <style>
+        @font-face {
             font-family: 'Diphylleia-Regular';
             src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_JAMO@1.0/Diphylleia-Regular.woff2') format('woff2');
             font-weight: normal;
             font-style: normal;
         }
 
-		body, html {
-			margin: 0;
-			padding: 0;
-			width: 100%;
-			height: 100%;
-			overflow: hidden;
-		}
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
 
-		#video-background {
-			position: fixed;
-			right: 0;
-			bottom: 0;
-			min-width: 100%;
-			min-height: 100%;
-			width: auto;
-			height: auto;
-			z-index: -1;
-		}
+        #video-background {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            z-index: -1;
+        }
 
-		.content-wrapper {
-			position: fixed;
-			top: 45%;
-			left: 50%;
-			transform: translate(-50%, -50%);
-			text-align: center;
-			z-index: 1000;
-		}
+        .content-wrapper {
+            position: fixed;
+            top: 45%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 1000;
+        }
 
-		#title {
-			font-size: 5vw;
-			color: #A87569;
-			font-family: 'Diphylleia-Regular', serif;
-			line-height: 1.2;
-			transform: skewX(-11deg);
-			text-shadow: 
-				calc(-0.2vw) calc(-0.2vw) 0 #7ECEF4,
-				calc(0.2vw) calc(-0.2vw) 0 #7ECEF4,
-				calc(-0.2vw) calc(0.2vw) 0 #7ECEF4,
-				calc(0.2vw) calc(0.2vw) 0 #7ECEF4,
-				calc(-0.15vw) calc(-0.15vw) 0 #7ECEF4,
-				calc(0.15vw) calc(-0.15vw) 0 #7ECEF4,
-				calc(-0.15vw) calc(0.15vw) 0 #7ECEF4,
-				calc(0.15vw) calc(0.15vw) 0 #7ECEF4;
-			-webkit-font-smoothing: antialiased;
-			-moz-osx-font-smoothing: grayscale;
-			margin-bottom: 10vw;
-		}
+        #title {
+            font-size: 5vw;
+            color: #A87569;
+            font-family: 'Diphylleia-Regular', serif;
+            margin-bottom: 5vw; /* 타이틀과 앨범 사이 간격 조정 */
+    text-align: center;
+            line-height: 1.2;
+            transform: skewX(-11deg);
+            text-shadow:
+                calc(-0.2vw) calc(-0.2vw) 0 #7ECEF4,
+                calc(0.2vw) calc(-0.2vw) 0 #7ECEF4,
+                calc(-0.2vw) calc(0.2vw) 0 #7ECEF4,
+                calc(0.2vw) calc(0.2vw) 0 #7ECEF4;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            margin-bottom: 10vw;
+            cursor: pointer;
+        }
 
-		#ravel-image {
-			width: 90%;
-			height: auto;
-			cursor: pointer;
-		}
+        #ravel-image {
+            width: 90%;
+            height: auto;
+            cursor: pointer;
+        }
 
-		.album {
-			position: relative;
-			width: 35vw;
-			margin: 0 2vw;
-		}
+        #main-screen {
+            display: block;
+        }
 
-		.vinyl {
-			width: 23vw;
-			height: 23vw;
-			border-radius: 50%;
-			background: #000000;
-			position: relative;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			margin-left: -3vw;
-			transition: all 0.6s ease;
-			z-index: 1;
-		}
+        #albums-screen {
+    display: none;
+    flex-direction: column; /* 타이틀과 앨범을 수직으로 배치 */
+    align-items: center;    /* 가로 중앙 정렬 */
+    background-color: #FFA2C0;
+    min-height: 100vh;
+    position: relative;     /* 타이틀 위치 조정을 위해 기준 설정 */
+}
+        .albums-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5vw;
+            position: relative;
+            top: 30vh;
+        }
 
-		.cover {
-			position: absolute;
-			top: 0;
-			left: 0;
-			width: 23vw;
-			height: 23vw;
-			object-fit: cover;
-			z-index: 2;
-		}
+        .album {
+            position: relative;
+            width: 35vw;
+            margin: 0 2vw;
+            display: flex;
+            align-items: center;
+            perspective: 1000px;
+        }
 
-		.album:hover .vinyl {
-			transform: translateX(15vw);
-			z-index: 3;
-		}
+        .vinyl {
+            width: 23vw;
+            height: 23vw;
+            border-radius: 50%;
+            background: #000000;
+            position: absolute;
+            left: 12vw;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1;
+            cursor: pointer;
+        }
 
-		@keyframes rotate {
-			from { transform: translateX(15vw) rotate(0deg); }
-			to { transform: translateX(15vw) rotate(360deg); }
-		}
+        .vinyl::before {
+            content: '';
+            position: absolute;
+            width: 25%;
+            height: 25%;
+            background: #FFF3D1;
+            border-radius: 50%;
+        }
 
-		.album:hover .vinyl.playing {
-			animation: rotate 2s linear infinite;
-		}
-	</style>
+        .vinyl::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: repeating-radial-gradient(
+                circle at center,
+                transparent,
+                transparent 2px,
+                rgba(165, 65, 65, 0.2) 2px,
+                rgba(165, 65, 65, 0.2) 4px
+            );
+        }
+
+        .cover {
+            position: absolute;
+            width: 25vw;
+            height: 25vw;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            object-fit: cover;
+            z-index: 2;
+        }
+
+        .album:hover .vinyl {
+            animation: slideAndRise 0.7s ease forwards;
+        }
+
+        .album:hover .cover {
+            animation: coverMove 0.7s ease forwards;
+        }
+
+        @keyframes slideAndRise {
+            0% {
+                transform: translateY(-50%);
+                z-index: 1;
+            }
+            50% {
+                transform: translateY(-50%) translateX(30%);
+                z-index: 1;
+            }
+            51% {
+                transform: translateY(-50%) translateX(30%);
+                z-index: 3;
+            }
+            100% {
+                transform: translateY(-50%) translateX(-10%);
+                z-index: 3;
+            }
+        }
+
+        @keyframes slideAndHide {
+            0% {
+                transform: translateY(-50%) translateX(-10%);
+                z-index: 3;
+            }
+            49% {
+                transform: translateY(-50%) translateX(30%);
+                z-index: 3;
+            }
+            50% {
+                transform: translateY(-50%) translateX(30%);
+                z-index: 1;
+            }
+            100% {
+                transform: translateY(-50%);
+                z-index: 1;
+            }
+        }
+
+        @keyframes coverMove {
+            0% { transform: translateY(-50%); }
+            50% { transform: translateY(-50%) translateX(-30%); }
+            100% { transform: translateY(-50%) translateX(-15%); }
+        }
+
+        @keyframes coverReturn {
+            0% { transform: translateY(-50%) translateX(-15%); }
+            50% { transform: translateY(-50%) translateX(-30%); }
+            100% { transform: translateY(-50%); }
+        }
+
+        @keyframes rotateLP {
+            from { transform: translateX(-10%) rotate(0deg); }
+            to { transform: translateX(-10%) rotate(360deg); }
+        }
+
+        .album:hover .vinyl.playing {
+            animation:
+                slideAndRise 0.7s ease forwards,
+                rotateLP 2s linear infinite 0.7s;
+        }
+
+        .album:not(:hover) .vinyl.playing {
+            animation: slideAndHide 0.7s ease forwards;
+        }
+    </style>
 </head>
 <body>
-	<video id="video-background" autoplay loop muted playsinline>
-		<source src="classic.mp4" type="video/mp4">
-	</video>
-	
-	<div class="content-wrapper">
-		<div id="title">Maurice Ravel</div>
-		<a href="albums.html">
-			<img id="ravel-image" src="ravel.png" alt="Ravel">
-		</a>
-	</div>
+    <div id="main-screen">
+        <video id="video-background" autoplay loop muted playsinline>
+            <source src="classic.mp4" type="video/mp4">
+        </video>
+        <div class="content-wrapper">
+            <div id="title">Maurice Ravel</div>
+            <img id="ravel-image" src="ravel.png" alt="Ravel">
+        </div>
+    </div>
 
-	<script>
-		document.querySelector('.ravel-img').addEventListener('click', () => {
-			// 클릭 이벤트를 localStorage에 저장
-			localStorage.setItem('audioInitialized', 'true');
-			// albums.html로 이동
-			window.location.href = 'albums.html';
-		});
-	</script>
+    <div id="albums-screen">
+        <div id="title" style="position: relative; top: 3vh;color: #FFF3D1;">Maurice Ravel</div>        <audio id="bolero-audio">
+            <source src="./Bolero.mp3" type="audio/mpeg">
+        </audio>
+        <audio id="pavane-audio">
+            <source src="./Pavane.mp3" type="audio/mpeg">
+        </audio>
+
+        <div class="albums-container">
+            <div class="album" id="bolero-album">
+                <div class="vinyl" id="vinyl1"></div>
+                <img src="cover1.png" alt="Boléro" class="cover">
+            </div>
+            <div class="album" id="pavane-album">
+                <div class="vinyl" id="vinyl2"></div>
+                <img src="cover2.png" alt="Pavane" class="cover">
+            </div>
+        </div>
+    </div>
+
+    <script>
+       document.getElementById('ravel-image').addEventListener('click', () => {
+    document.getElementById('main-screen').style.display = 'none';
+    document.getElementById('albums-screen').style.display = 'block';
+});
+
+document.getElementById('title').addEventListener('click', () => {
+    document.getElementById('albums-screen').style.display = 'none';
+    document.getElementById('main-screen').style.display = 'block';
+});
+
+const boleroAudio = document.getElementById('bolero-audio');
+const pavaneAudio = document.getElementById('pavane-audio');
+let currentAudio = null; // 현재 재생 중인 오디오를 추적
+
+document.querySelectorAll('.album').forEach(album => {
+    const vinyl = album.querySelector('.vinyl');
+    const cover = album.querySelector('.cover');
+
+    album.addEventListener('mouseenter', () => {
+        // 기존 재생 중인 오디오 중지
+        if (currentAudio) {
+            currentAudio.pause();
+            currentAudio.currentTime = 0;
+        }
+
+        // 현재 앨범에 맞는 오디오 재생
+        if (album.id === 'bolero-album') {
+            currentAudio = boleroAudio;
+            currentAudio.currentTime = 11.5; // 10초 뒤부터 시작
+        } else {
+            currentAudio = pavaneAudio;
+            currentAudio.currentTime = 2; // 처음부터 시작
+        }
+
+        try {
+            currentAudio.play(); // 재생 시도
+            vinyl.classList.add('playing'); // 회전 애니메이션 시작
+        } catch (error) {
+            console.error("Audio play failed:", error);
+        }
+
+        vinyl.style.zIndex = '3';
+        vinyl.style.animation = 'slideAndRise 0.7s ease forwards';
+        cover.style.animation = 'coverMove 0.7s ease forwards';
+    });
+
+    album.addEventListener('mouseleave', () => {
+        if (currentAudio) {
+            currentAudio.pause();
+            currentAudio.currentTime = 0;
+            currentAudio = null; // 현재 오디오 상태 초기화
+        }
+        vinyl.classList.remove('playing'); // 애니메이션 중지
+        vinyl.style.zIndex = '1';
+        vinyl.style.animation = 'slideAndHide 0.7s ease forwards';
+        cover.style.animation = 'coverReturn 0.7s ease forwards';
+    });
+
+    // 클릭 이벤트 추가: 페이지 이동 처리
+    album.addEventListener('click', () => {
+        if (album.id === 'bolero-album') {
+            window.location.href = './Bolero/index.html'; // Bolero 폴더의 HTML로 이동
+        } else if (album.id === 'pavane-album') {
+            window.location.href = './Pavane/index.html'; // Pavane 폴더의 HTML로 이동
+        }
+    });
+});
+
+
+    </script>
 </body>
 </html>
